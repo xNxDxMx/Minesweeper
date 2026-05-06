@@ -1,0 +1,114 @@
+package group2.hw5.minesweeper.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+
+import group2.hw5.minesweeper.service.MinesweeperService;
+
+/**
+ * MinesweeperController Class for for handling web requests related to Minesweeper
+ *
+ * @author Julian Hinojosa
+ * @author Nathaniel McPherson
+ */
+
+@Controller                         // Marks this class as a Spring MVC Controller
+@SessionAttributes("gameService")   // Persists the gameService object across multiple HTTP requests in a session
+public class MinesweeperController {
+
+    /**
+     * Handles request to the home page ("/").
+     * Loads the index (landing) view.
+     */
+    @GetMapping("/")
+    public String home(Model model) {
+        return "index";
+    }
+
+    /**
+     * Starts a new Minesweeper game.
+     * @param size Optional request parameter for board size (default 8x8).
+     * @param model Spring's model to pass attributes to the view.
+     * @return the game view
+     */
+    @GetMapping("/game")
+    public String startGame(@RequestParam(required = false, defaultValue = "8") int size, Model model) {
+        // Create a new game service with the specified size
+        MinesweeperService gameService = new MinesweeperService(size);
+        model.addAttribute("gameService", gameService);
+        model.addAttribute("game", gameService.getGame());
+        model.addAttribute("grid", gameService.getGame().getGrid());
+        model.addAttribute("player", gameService.getPlayer());
+
+        return "game";      // Load the game view
+    }
+
+     /**
+     * Reveals a cell when the player clicks on it.
+     * @param row The row of the clicked cell.
+     * @param col The column of the clicked cell.
+     * @param model Spring's model to update view attributes.
+     * @return the updated game view
+     */
+    @PostMapping("/reveal")
+    public String revealCell(@RequestParam int row, @RequestParam int col, Model model) {
+        MinesweeperService gameService = (MinesweeperService) model.getAttribute("gameService");
+        gameService.revealCell(row, col);               // Reveal the cell at the given coordinates
+
+        updateModelAttributes(model, gameService);      // Update model attributes after revealing
+
+        if (gameService.getGame().isGameOver()) {       // Check if the game is over after the reveal
+            if (gameService.getGame().isGameWon()) {
+                gameService.getPlayer().win();
+            } else {
+                gameService.getPlayer().lose();
+            }
+        }
+
+        return "game";                                  // Reload the game view
+    }
+
+    /**
+     * Toggles a flag on a cell (placing or removing a flag).
+     * @param row The row of the cell.
+     * @param col The column of the cell.
+     * @param model Spring's model to update view attributes.
+     * @return the updated game view
+     */
+    @PostMapping("/flag")
+    public String toggleFlag(@RequestParam int row, @RequestParam int col, Model model) {
+        MinesweeperService gameService = (MinesweeperService) model.getAttribute("gameService");
+        gameService.toggleFlag(row, col);           // Toggle a flag at the specified cell
+
+        updateModelAttributes(model, gameService);  // Update model attributes after toggling flag
+
+        return "game";                              // Reload the game view
+    }
+
+    /**
+     * Starts a new game by clearing the session attributes.
+     * @param sessionStatus Spring's session status object to end session
+     * @return Redirects the user to the home page
+     */
+    @GetMapping("/newGame")
+    public String newGame(SessionStatus sessionStatus) {
+        sessionStatus.setComplete();                        // Clear the session (clears stored "gameService")
+        return "redirect:/";                                // Redirect to the home page
+    }
+
+    /**
+     * Helper method to update model attributes consistently across multiple operations.
+     * @param model The model to update.
+     * @param gameService The game service containing updated game data.
+     */
+    private void updateModelAttributes(Model model, MinesweeperService gameService) {
+        model.addAttribute("game", gameService.getGame());
+        model.addAttribute("grid", gameService.getGame().getGrid());
+        model.addAttribute("player", gameService.getPlayer());
+    }
+}
