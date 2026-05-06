@@ -1,0 +1,162 @@
+package group2.hw5.minesweeper;
+
+/**
+ * Cell Class for minesweeper
+ * 
+ * Represents a single cell in the Minesweeper grid,
+ * tracking its position, state (revealed, flagged), 
+ * whether it has a mine, and how many adjacent mines it has.
+ *
+ * @author Julian Hinojosa
+ * @author Nathaniel McPherson
+ * @author Kyle Tschida
+ */
+
+public class Cell {
+
+
+    // --- Fields ---
+
+    private final int row;             // The row index of the cell in the grid
+    private final int col;             // The column index of the cell in the grid
+    private boolean isRevealed;        // Whether the cell has been revealed
+    private boolean isFlagged;         // Whether the cell is flagged
+    private boolean hasMine;           // Whether the cell contains a mine
+    private int adjacentMines;         // Number of mines adjacent to this cell
+
+    /**
+     * Constructor for Cell.
+     * Initializes the cell at a specific (row, column) without a mine or flags.
+     *
+     * @param row The row coordinate of the cell
+     * @param col The column coordinate of the cell
+     */
+    public Cell(int row, int col) {
+        this.row = row;
+        this.col = col;
+        this.isRevealed = false;      // Cells start hidden
+        this.isFlagged = false;       // Cells start unflagged
+        this.hasMine = false;         // Cells start without a mine
+        this.adjacentMines = 0;       // Initially assume no adjacent mines
+    }
+
+    // --- Getters ---
+
+    /**
+     * @return the row index of this cell
+     */
+    public int getRow() {
+        return row;
+    }
+
+    /**
+     * @return the column index of this cell
+     */
+    public int getCol() {
+        return col;
+    }
+
+    /**
+     * @return true if the cell has been revealed
+     */
+    public boolean isRevealed() {
+        return isRevealed;
+    }
+
+    /**
+     * @return true if the cell is flagged
+     */
+    public boolean isFlagged() {
+        return isFlagged;
+    }
+
+    /**
+     * @return true if the cell contains a mine
+     */
+    public boolean hasMine() {
+        return hasMine;
+    }
+
+    /**
+     * @return the number of adjacent mines
+     */
+    public int getAdjacentMines() {
+        return adjacentMines;
+    }
+
+    // --- Setters ---
+
+    /**
+     * Sets whether this cell has been revealed.
+     * 
+     * @param revealed true to mark the cell as revealed
+     */
+    public void setRevealed(boolean revealed) {
+        this.isRevealed = revealed;
+    }
+
+    /**
+     * Sets whether this cell is flagged.
+     * 
+     * @param flagged true to mark the cell as flagged
+     */
+    public void setFlagged(boolean flagged) {
+        this.isFlagged = flagged;
+    }
+
+    /**
+     * Sets whether this cell contains a mine.
+     * 
+     * @param hasMine true if a mine is placed in this cell
+     */
+    public void setMine(boolean hasMine) {
+        this.hasMine = hasMine;
+    }
+
+    /**
+     * Sets the number of adjacent mines for this cell.
+     * 
+     * @param adjacentMines the number of neighboring mines
+     */
+    public void setAdjacentMines(int adjacentMines) {
+        this.adjacentMines = adjacentMines;
+    }
+
+    // --- Other Methods ---
+
+    /**
+     * Checks if the cell is completely empty.
+     * (No mine inside, and no adjacent mines around.)
+     * 
+     * @return true if the cell is empty
+     */
+    public boolean isEmpty() {
+        return !hasMine && adjacentMines == 0;
+    }
+
+    /**
+     * Checks if the cell can be revealed.
+     * (It must not already be revealed or flagged.)
+     * 
+     * @return true if the cell can be revealed
+     */
+    public boolean canBeRevealed() {
+        return !isRevealed && !isFlagged;
+    }
+
+    /**
+     * Provides a string representation of the cell for debugging purposes.
+     * Shows coordinates, mine status, flag status, and reveal status.
+     * 
+     * Example output:
+     *  - "Cell[2,3] 2"  (2 adjacent mines)
+     *  - "Cell[5,5] M F R"  (Mine, Flagged, Revealed)
+     */
+    @Override
+    public String toString() {
+        return "Cell[" + row + "," + col + "] " +
+                (hasMine ? "M" : adjacentMines) +
+                (isFlagged ? " F" : "") +
+                (isRevealed ? " R" : "");
+    }
+}
