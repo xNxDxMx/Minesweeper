@@ -1,0 +1,93 @@
+package group2.hw5.minesweeper.service;
+
+import java.io.Serializable;
+
+import group2.hw5.minesweeper.Cell;
+import group2.hw5.minesweeper.Minesweeper;
+import group2.hw5.minesweeper.Player;
+
+
+/**
+ * MinesweeperService Class for minesweeper
+ * This class acts as a **service layer** that manages communication
+ * between the Minesweeper game logic and the web controller.
+ * @author Julian Hinojosa
+ * @author Nathaniel McPherson
+ */
+
+public class MinesweeperService implements Serializable {   // Serializable allows this object to be saved into session
+
+    private final Minesweeper game;                         // The current Minesweeper game instance
+    private final Player player;                            // The player associated with this game
+
+    /**
+     * Constructor for MinesweeperService.
+     * Initializes a new Minesweeper game and a Player with a number of flags
+     * equal to the number of mines in the game.
+     * @param size The size of the game board (assumes square board size x size)
+     */
+    public MinesweeperService(int size) {
+        this.game = new Minesweeper(size);
+        // Initialize player with the appropriate number of flags (same as number of mines)
+        this.player = new Player(game.getGrid().getTotalMines());
+    }
+
+    /**
+     * Getter for the current Minesweeper game.
+     * 
+     * @return the Minesweeper game object
+     */
+    public Minesweeper getGame() {
+        return game;
+    }
+
+    /**
+     * Getter for the Player object.
+     * 
+     * @return the Player instance
+     */
+    public Player getPlayer() {
+        return player;
+    }
+
+    /**
+     * Reveals a cell at the specified row and column.
+     * 
+     * Does nothing if the game is already over.
+     * 
+     * @param row The row index of the cell
+     * @param col The column index of the cell
+     */
+    public void revealCell(int row, int col) {
+        if (!game.isGameOver()) {
+            game.revealCell(row, col);
+        }
+    }
+
+    /**
+     * Toggles a flag on a cell.
+     * 
+     * - If the cell is already flagged, removes the flag.
+     * - If the cell is not revealed and the player has flags remaining, adds a flag.
+     * - Does nothing if the game is over.
+     * 
+     * @param row The row index of the cell
+     * @param col The column index of the cell
+     */
+    public void toggleFlag(int row, int col) {
+        if (!game.isGameOver()) {
+            Cell cell = game.getGrid().getCell(row, col);
+
+            // If cell is already flagged, remove the flag
+            if (cell.isFlagged()) {
+                game.toggleFlag(row, col);
+                player.removeFlag();
+            }
+            // Otherwise, add a flag if possible
+            else if (!cell.isRevealed() && player.canPlaceFlag()) {
+                game.toggleFlag(row, col);
+                player.placeFlag();
+            }
+        }
+    }
+}
