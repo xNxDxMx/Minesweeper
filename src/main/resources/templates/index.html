@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Minesweeper</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div class="windows-container">
+        <!-- Window Title Bar -->
+        <div class="window-title">
+            <div class="window-buttons">
+            </div>
+        </div>
+
+        <!-- Window Content -->
+        <div class="window-content">
+            <!-- Menu Bar -->
+            <div class="menu-bar">
+                <div class="menu-item">MINESWEEPER</div>
+            </div>
+
+            <div class="settings">
+                <h2>Choose Difficulty Level:</h2>
+                <div class="buttons">
+                    <a href="/game?size=8" class="win-btn">Beginner (8x8, 10 mines)</a>
+                    <a href="/game?size=16" class="win-btn">Expert (16x16, 40 mines)</a>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h2>How to Play:</h2>
+                <ul>
+                    <li>Left-click on a square to reveal what's underneath</li>
+                    <li>Right-click to place a flag where you think a mine is</li>
+                    <li>Numbers indicate how many mines are in the adjacent squares</li>
+                    <li>Clear all squares without mines to win</li>
+                    <li>If you hit a mine, game over!</li>
+                </ul>
+
+                <div style="margin-top: 20px; text-align: center;">
+                    <img th:src="@{/images/minesweeper-icon.png}" alt="Minesweeper Icon" style="width: 64px; height: 64px;" onerror="this.style.display='none'">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Make window buttons do nothing (just for show)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.window-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+        });
+
+        // Menu items do nothing (just for show)
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+        });
+    });
+</script>
+</body>
+</html>

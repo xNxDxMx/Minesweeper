@@ -1,0 +1,140 @@
+<!-- Mainly uses thymleaf template and ai templates to make minesweeper game -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Minesweeper</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body th:attr="data-game-over=${game.isGameOver()}">
+<div class="container">
+  <div class="windows-container">
+    <!-- Window Title Bar -->
+    <div class="window-title">
+      <div class="window-buttons">
+      </div>
+    </div>
+
+    <!-- Window Content -->
+    <div class="window-content">
+      </div>
+      <!-- Top Panel with Counter and Smiley -->
+      <div class="top-panel">
+        <!-- Mine Counter (Remaining mines = Total - Flags used) -->
+        <div class="counter" th:text="${player.getTotalFlags() - player.getFlagsUsed()}">000</div>
+
+        <!-- Smiley Face Button (changes based on game state) -->
+        <a href="/newGame" class="smiley-face" id="smiley-face">
+          <span th:if="${game.isGameOver() && game.isGameWon()}">🤩</span>
+          <span th:if="${game.isGameOver() && !game.isGameWon()}">💩</span>
+          <span th:if="${!game.isGameOver()}">😀</span>
+        </a>
+
+      </div>
+
+      <!-- Game Grid -->
+      <div class="grid-container" th:classappend="${grid.getRows() == 16 ? 'large' : ''}"
+           th:attr="data-rows=${grid.getRows()},data-cols=${grid.getCols()}">
+        <table class="grid">
+          <tr th:each="row : ${#numbers.sequence(0, grid.getRows() - 1)}">
+            <td th:each="col : ${#numbers.sequence(0, grid.getCols() - 1)}"
+                th:with="cell=${grid.getCell(row, col)}"
+                th:class="${'cell ' +
+                          (cell.isRevealed() ? 'revealed ' : '') +
+                          (cell.isFlagged() ? 'flagged ' : '') +
+                          (cell.isRevealed() && cell.isEmpty() ? 'empty ' : '') +
+                          (cell.isRevealed() && cell.hasMine() ? 'mine ' : '') +
+                          (cell.isRevealed() && cell.hasMine() && game.isGameOver() && !game.isGameWon() ? 'exploded-mine ' : '')}"
+                th:data-row="${row}"
+                th:data-col="${col}">
+
+              <!-- Cell Content (visible when revealed) -->
+              <div class="cell-content">
+                <!-- Display content based on cell state -->
+                <span th:if="${cell.isRevealed() && cell.hasMine()}" class="mine">💣</span>
+                <span th:if="${cell.isRevealed() && !cell.hasMine() && !cell.isEmpty()}"
+                      th:text="${cell.getAdjacentMines()}"
+                      th:class="'number-' + ${cell.getAdjacentMines()}">
+                </span>
+                <!-- For revealed but empty cells, don't display anything -->
+              </div>
+
+              <!-- Cell action forms -->
+              <form th:if="${!game.isGameOver()}" method="post" action="/reveal" class="reveal-form">
+                <input type="hidden" name="row" th:value="${row}">
+                <input type="hidden" name="col" th:value="${col}">
+                <button type="submit" class="cell-button"></button>
+              </form>
+
+              <form th:if="${!game.isGameOver()}" method="post" action="/flag" class="flag-form">
+                <input type="hidden" name="row" th:value="${row}">
+                <input type="hidden" name="col" th:value="${col}">
+                <button type="submit" class="flag-button" style="display: none;">Flag</button>
+              </form>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Game Status Message (only shown when game is over) -->
+      <div th:if="${game.isGameOver()}">
+        <div th:if="${game.isGameWon()}" class="win-message">You won! Click the star face to play again.</div>
+        <div th:if="${!game.isGameWon()}" class="lose-message">Game over! Click the turd face to play again.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include external JavaScript file -->
+<script th:src="@{/js/game.js}"></script>
+
+<!-- Critical right-click handler - direct inline solution -->
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get game state from Thymeleaf
+    const isGameOver = [[${game.isGameOver()}]];
+
+    // Direct right-click handler implementation
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(function(cell) {
+      cell.addEventListener('contextmenu', function(e) {
+        // Prevent default context menu
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Only proceed if game is not over
+        if (!isGameOver) {
+          // Get the flag form in this cell and submit it
+          const flagForm = this.querySelector('.flag-form');
+          if (flagForm) {
+            flagForm.submit();
+            return false;
+          }
+        }
+      });
+    });
+
+
+    // Smiley face reactions
+    const smileyFace = document.getElementById('smiley-face');
+    if (smileyFace && !isGameOver) {
+      const originalSmiley = smileyFace.innerHTML;
+
+      // Change to worried face when clicking
+      cellButtons.forEach(function(button) {
+        button.addEventListener('mousedown', function() {
+          smileyFace.innerHTML = '😶';
+        });
+      });
+
+      // Reset smiley on mouseup anywhere
+      document.addEventListener('mouseup', function() {
+        smileyFace.innerHTML = originalSmiley;
+      });
+    }
+  });
+</script>
+</body>
+</html>
