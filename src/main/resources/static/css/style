@@ -1,0 +1,218 @@
+/* ───────────────
+   MINESWEEPER – clean, modern theme
+   ─────────────── */
+
+:root {
+    --bg-main: #f3f3f3;
+    --bg-panel: #ffffff;
+    --bg-button: #e0e0e0;
+    --border-main: #cccccc;
+    --text-main: #222222;
+    --text-muted: #666666;
+    --danger: #ff4d4f;
+    --success: #52c41a;
+    --number-1: #1e90ff;
+    --number-2: #28a745;
+    --number-3: #dc3545;
+    --number-4: #0056b3;
+    --number-5: #8b0000;
+    --number-6: #20b2aa;
+    --number-7: #000000;
+    --number-8: #808080;
+    font-size: 16px;       /* base rem sizing */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.4;
+}
+
+.container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    text-align: center;
+}
+
+/* ─── Top panel ─────────────────────────────────────────────── */
+
+.top-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-main);
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.counter {
+    font-family: 'Digital', monospace;
+    font-size: 1.6rem;
+    background: #000;
+    color: #ff3b30;
+    padding: 0.2rem 0.4rem;
+    width: 3.5rem;
+    text-align: right;
+    border-radius: 3px;
+}
+
+.smiley-face {
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 1.3rem;
+    line-height: 2.2rem;
+    background: var(--bg-button);
+    border: 1px solid var(--border-main);
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+}
+.smiley-face:active { transform: scale(0.92); }
+
+/* ─── Game grid ─────────────────────────────────────────────── */
+
+.grid-container {
+    display: inline-block;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-main);
+    border-radius: 4px;
+}
+
+.grid { border-collapse: collapse; }
+
+.cell {
+    width: 1.5rem;
+    height: 1.5rem;
+    position: relative;
+    font-weight: 600;
+    user-select: none;
+}
+
+.cell-button {
+    position: absolute;
+    inset: 0;
+    background: var(--bg-button);
+    border: 1px solid var(--border-main);
+    cursor: pointer;
+    transition: background 0.1s;
+}
+.cell-button:hover { background: #d6d6d6; }
+
+.cell.revealed {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-main);
+}
+
+.cell-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.revealed .cell-button { display: none; }
+
+.flagged .cell-button::after {
+    content: "🚩";
+    font-size: 0.8rem;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Number colours */
+.number-1 { color: var(--number-1); }
+.number-2 { color: var(--number-2); }
+.number-3 { color: var(--number-3); }
+.number-4 { color: var(--number-4); }
+.number-5 { color: var(--number-5); }
+.number-6 { color: var(--number-6); }
+.number-7 { color: var(--number-7); }
+.number-8 { color: var(--number-8); }
+
+.mine { font-size: 0.9rem; }
+.exploded-mine { background: var(--danger) !important; }
+
+/* ─── Status messages & buttons ─────────────────────────────── */
+
+.win-message,
+.lose-message {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.win-message  { background: var(--success); color: #fff; }
+.lose-message { background: var(--danger);  color: #fff; }
+
+.win-btn {
+    margin: 0.4rem;
+    padding: 0.5rem 1.2rem;
+    background: var(--bg-button);
+    border: 1px solid var(--border-main);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+.win-btn:hover  { background: #d6d6d6; }
+.win-btn:active { transform: scale(0.97); }
+
+/* ─── Menu bar (optional) ───────────────────────────────────── */
+
+.menu-bar {
+    display: flex;
+    gap: 0.5rem;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-main);
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.menu-item {
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    border-radius: 3px;
+    color: var(--text-muted);
+}
+.menu-item:hover { background: var(--bg-button); color: var(--text-main); }
+
+/* ─── Settings & Instructions boxes (optional) ─────────────── */
+
+.settings,
+.instructions {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-main);
+    border-radius: 4px;
+    padding: 1rem;
+    margin-top: 1rem;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.instructions ul { margin-left: 1.2rem; }
+.instructions li { margin-bottom: 0.4rem; }
+
+/* ─── Responsive tweaks ─────────────────────────────────────── */
+
+@media (max-width: 600px) {
+    .cell   { width: 1.25rem; height: 1.25rem; font-size: 0.7rem; }
+    .counter { width: 3rem;   font-size: 1.2rem; }
+    .smiley-face { width: 2rem; height: 2rem; font-size: 1.2rem; }
+}
